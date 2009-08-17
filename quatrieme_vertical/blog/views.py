@@ -7,9 +7,8 @@ from .models import Article, Category, Comment, ResponseComment, Utilisateur
 
 
 def index(request):
-
-    all_articles = Article.objects.all()
-    last_article = Article.objects.get(pk=1)
+    last_article = Article.objects.last()
+    all_articles = Article.objects.exclude(pk=last_article.id)    
     categories = Category.objects.all()
     context = {
         "articles_limit": all_articles[:3],
