@@ -1,0 +1,56 @@
+{% extends 'blog/base.html' %}
+
+{% block sectionHead %}
+  <section class="site-section pt-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+
+          <div class="owl-carousel owl-theme slider">
+            
+            <div>
+              <a href="" class="a-block d-flex align-items-center height-lg" style="background-image: url('static/blog/images/{{ last_article.image }}'); ">
+                <div class="text half-to-full">
+                  <div class="post-meta">
+                    <span class="category">{{ last_article.category }} </span>
+                    <span class="mr-2">{{ last_article.date_create }} </span> &bullet;
+                    <span class="ml-2"><span class="fa fa-comments"></span> 3</span>
+                  </div>
+                  <h3>{{ last_article.title }} </h3>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem nobis, ut dicta eaque ipsa laudantium!</p>
+                </div>
+              </a>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      <div class="row">
+
+        {% for article in articles_limit %}
+        <div class="col-md-6 col-lg-4">
+          <a href="{% url 'blog:single' article_id=1 %}" class="a-block d-flex align-items-center height-md" style="background-image: url('static/blog/images/{{ article.image }}'); ">
+            <div class="text">
+              <div class="post-meta">
+                <span class="category">{{ article.category }} </span>
+                <span class="mr-2">{{ article.date_create }} </span> &bullet;
+                <span class="ml-2"><span class="fa fa-comments"></span> 3</span>
+              </div>
+              <h3>There’s a Cool New Way for Men to Wear Socks and Sandals</h3>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+
+  </section>
+  <!-- END section -->
+{% endblock %}
+
+{% block content %}
+
+  {% include 'blog/listing.html' %}
+  <!-- END main-content -->
+{% endblock %}

@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Mystères du monde</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% load static %}
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:300, 400,700" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'blog/css/bootstrap.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'blog/css/animate.css' %}">
+    <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'blog/fonts/ionicons/css/ionicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/fonts/fontawesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/fonts/flaticon/font/flaticon.css' %}">
+
+    <!-- Theme Style -->
+    <link rel="stylesheet" href="{% static 'blog/css/style.css' %}">
+  </head>
+  <body>
+    
+
+
+    <header role="banner">
+      <div class="top-bar">
+        <div class="container">
+          <div class="row">
+            <div class="col-9 social">
+              <a href="/"><span class="fa fa-twitter"></span></a>
+              <a href="#"><span class="fa fa-facebook"></span></a>
+              <a href="#"><span class="fa fa-instagram"></span></a>
+              <a href="#"><span class="fa fa-youtube-play"></span></a>
+              <a href="#"><span class="fa fa-vimeo"></span></a>
+              <a href="#"><span class="fa fa-snapchat"></span></a>
+            </div>
+            <div class="col-3 search-top">
+              <!-- <a href="#"><span class="fa fa-search"></span></a> -->
+              <form action="{% url 'blog:search' %}" class="search-top-form" method="get" accept-charset="utf-8">
+                <span class="icon fa fa-search"></span>
+                <input type="text" id="s" placeholder="Rechercher un article...">
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container logo-wrap">
+        <div class="row pt-5">
+          <div class="col-12 text-center">
+            <a class="absolute-toggle d-block d-md-none" data-toggle="collapse" href="#navbarMenu" role="button" aria-expanded="false" aria-controls="navbarMenu"><span class="burger-lines"></span></a>
+            <h1 class="site-logo"><a href="/">Aun-Weor</a></h1>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="navbar navbar-expand-md  navbar-light bg-light">
+        <div class="container">
+          <div class="collapse navbar-collapse" id="navbarMenu">
+            <ul class="navbar-nav mx-auto">
+              <li class="nav-item">
+                <a class="nav-link active" href="/">Acceuil</a>
+              </li>
+
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="category.html" id="dropdown05" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Categories</a>
+                <div class="dropdown-menu" aria-labelledby="dropdown05">
+                  {% for category in categories %}
+                  <a class="dropdown-item" href="category.html">{{ category }}</a>
+                  {% endfor %}
+                </div>
+
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'blog:about' %}">A propos</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'blog:contact' %}">Contact</a>
+              </li>
+            </ul>
+            
+          </div>
+        </div>
+      </nav>
+    </header>
+    
+    <!-- if block head insert it here -->
+    {% block sectionHead %}{% endblock %}
+    <!-- end for if block -->
+
+    <section class="site-section py-sm">
+        <div class="container">
+
+            <div class="row blog-entries">
+                
+                <!-- insert block for principal variable page content -->
+                {% block content %}{% endblock %}
+                <!-- end for insert block -->
+                
+                <div class="col-md-12 col-lg-4 sidebar">
+
+                    <!-- END sidebar-box -->
+                    <div class="sidebar-box">
+                    <div class="bio text-center">
+                        <img src="{% static 'blog/images/person_1.jpg %'}" alt="Image Placeholder" class="img-fluid">
+                        <div class="bio-body">
+                        <h2>Meagan Smith</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Exercitationem facilis sunt repellendus excepturi beatae porro debitis voluptate nulla quo veniam fuga sit molestias minus.</p>
+                        <p><a href="#" class="btn btn-primary btn-sm">Read my bio</a></p>
+                        <p class="social">
+                            <a href="#" class="p-2"><span class="fa fa-facebook"></span></a>
+                            <a href="#" class="p-2"><span class="fa fa-twitter"></span></a>
+                            <a href="#" class="p-2"><span class="fa fa-instagram"></span></a>
+                            <a href="#" class="p-2"><span class="fa fa-youtube-play"></span></a>
+                        </p>
+                        </div>
+                    </div>
+                    </div>
+                    <!-- END sidebar-box -->  
+                    <div class="sidebar-box">
+                    <h3 class="heading">Les plus lus</h3>
+                    <div class="post-entry-sidebar">
+                        <ul>
+                          {% for article in articles_limit %}
+                          <li>
+                              <a href="">
+                              <img src="static/blog/images/{{ article.image }}" alt="Image placeholder" class="mr-4">
+                              <div class="text">
+                                  <h4>{{ article.title }}</h4>
+                                  <div class="post-meta">
+                                  <span class="mr-2">{{ article.date_create }} </span> &bullet;
+                                  <span class="ml-2"><span class="fa fa-comments"></span> 3</span>
+                                  </div>
+                              </div>
+                              </a>
+                          </li>
+                          {% endfor %}
+                        </ul>
+                    </div>
+                    </div>
+                    <!-- END sidebar-box -->
+
+                    <div class="sidebar-box">
+                    <h3 class="heading">Categories</h3>
+                    <ul class="categories">
+                       {% for category in categories %}
+                        <li><a href="#">{{ category.name }} <span>(12)</span></a></li>
+                        {% endfor %}
+                    </ul>
+                    </div>
+                    <!-- END sidebar-box -->
+
+                    <div class="sidebar-box">
+                    <h3 class="heading">Tags</h3>
+                    <ul class="tags">
+                        <li><a href="#">Travel</a></li>
+                        <li><a href="#">Adventure</a></li>
+                        <li><a href="#">Food</a></li>
+                        <li><a href="#">Lifestyle</a></li>
+                        <li><a href="#">Business</a></li>
+                        <li><a href="#">Freelancing</a></li>
+                        <li><a href="#">Travel</a></li>
+                        <li><a href="#">Adventure</a></li>
+                        <li><a href="#">Food</a></li>
+                        <li><a href="#">Lifestyle</a></li>
+                        <li><a href="#">Business</a></li>
+                        <li><a href="#">Freelancing</a></li>
+                    </ul>
+                    </div>
+                </div>
+                <!-- END sidebar -->
+
+            </div>
+        </div>
+    </section>
+
+    <!-- footer of the page begin here -->
+    <footer class="site-footer">
+        <div class="container">
+          <div class="row mb-5">
+            <div class="col-md-4">
+              <h3>Paragraphe</h3>
+              <p>
+                <img src="{% static 'blog/images/img_1.jpg' %}" alt="Image placeholder" class="img-fluid">
+              </p>
+  
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nisi, accusantium optio unde perferendis eum illum voluptatibus dolore tempora, consequatur minus asperiores temporibus reprehenderit.</p>
+            </div>
+            <div class="col-md-6 ml-auto">
+              <div class="row">
+                <div class="col-md-7">
+                  <h3>Derniers articles publiés</h3>
+                  <div class="post-entry-sidebar">
+                    <ul>
+                      {% for article in articles_limit %}
+                      <li>
+                        <a href="{% url 'blog:single' article_id=article.id %} ">
+                          <img src="static/blog/images/{{ article.image }}" alt="Image placeholder" class="mr-4">
+                          <div class="text">
+                            <h4>{{ article.title }}</h4>
+                            <div class="post-meta">
+                              <span class="mr-2">{{ article.date }} </span> &bullet;
+                              <span class="ml-2"><span class="fa fa-comments"></span> 3</span>
+                            </div>
+                          </div>
+                        </a>
+                      </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+                <div class="col-md-1"></div>
+                
+                <div class="col-md-4">
+  
+                  <div class="mb-5">
+                    <h3>Racourcis</h3>
+                    <ul class="list-unstyled">
+                      <li><a href="#">Acceuil</a></li>
+                      <li><a href="#">A propos</a></li>
+                      <li><a href="#">Categories</a></li>
+                      <li><a href="#">Contact</a></li>
+                    </ul>
+                  </div>
+                  
+                  <div class="mb-5">
+                    <h3>Social</h3>
+                    <ul class="list-unstyled footer-social">
+                      <li><a href="#"><span class="fa fa-facebook"></span> Facebook</a></li>
+                      <li><a href="#"><span class="fa fa-vimeo"></span> Vimeo</a></li>
+                      <li><a href="#"><span class="fa fa-youtube-play"></span> Youtube</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+  Copyright &copy;2020 All rights reserved |
+  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            </div>
+          </div>
+        </div>
+      </footer>
+      <!-- END footer -->
+      
+      <!-- loader -->
+      <div id="loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#f4b214"/></svg></div>
+  
+      <script src="{% static 'blog/js/jquery-3.2.1.min.js' %}"></script>
+      <script src="{% static 'blog/js/jquery-migrate-3.0.0.js' %}"></script>
+      <script src="{% static 'blog/js/popper.min.js' %}"></script>
+      <script src="{% static 'blog/js/bootstrap.min.js' %}"></script>
+      <script src="{% static 'blog/js/owl.carousel.min.js' %}"></script>
+      <script src="{% static 'blog/js/jquery.waypoints.min.js' %}"></script>
+      <script src="{% static 'blog/js/jquery.stellar.min.js' %}"></script>
+  
+      
+      <script src="{% static 'blog/js/main.js' %}"></script>
+    </body>
+  </html>
