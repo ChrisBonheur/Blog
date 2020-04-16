@@ -8,13 +8,27 @@ from .models import Article, Category, Comment, ResponseComment, Utilisateur
 
 def index(request):
     last_article = Article.objects.last()
-    all_articles = Article.objects.exclude(pk=last_article.id)    
+    # get total comment for last article
+    last_article_count_comment = Comment.objects.filter(article__id=last_article.id)
+    last_article_count_comment = last_article_count_comment.count()
+        
+    all_articles = Article.objects.exclude(pk=last_article.id)
+    list_comment = []
+    
+    for article in all_articles:
+        len_comment = Comment.objects.filter(article__title=article.title)
+        len_comment = len_comment.count()  
+        list_comment.append(len_comment)
+        
     categories = Category.objects.all()
+    
     context = {
         "articles_limit": all_articles[:3],
         "all_articles": all_articles,
         "last_article": last_article,
-        "categories": categories
+        "last_article_count_comment": last_article_count_comment,
+        "categories": categories,
+        "list_comment": list_comment
     }
     return render(request, 'blog/index.html', context)
 

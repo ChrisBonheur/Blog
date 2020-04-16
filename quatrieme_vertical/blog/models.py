@@ -34,6 +34,7 @@ class Comment(models.Model):
     date_create = models.DateTimeField(auto_now_add=True)
     date_edit = models.DateTimeField(auto_now_add=True)
     utilisateur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, null=True)
     
     def __str__(self):
         return self.content

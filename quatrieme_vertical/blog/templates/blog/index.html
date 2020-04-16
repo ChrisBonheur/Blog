@@ -9,15 +9,15 @@
           <div class="owl-carousel owl-theme slider">
             
             <div>
-              <a href="" class="a-block d-flex align-items-center height-lg" style="background-image: url('static/blog/images/{{ last_article.image }}'); ">
+              <a href="{% url 'blog:single' article_id=last_article.id %} " class="a-block d-flex align-items-center height-lg" style="background-image: url('static/blog/images/{{ last_article.image }}'); ">
                 <div class="text half-to-full">
                   <div class="post-meta">
                     <span class="category">{{ last_article.category }} </span>
                     <span class="mr-2">{{ last_article.date_create }} </span> &bullet;
-                    <span class="ml-2"><span class="fa fa-comments"></span> 3</span>
+                    <span class="ml-2"><span class="fa fa-comments"></span>{{ last_article_count_comment }} </span>
                   </div>
                   <h3>{{ last_article.title }} </h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem nobis, ut dicta eaque ipsa laudantium!</p>
+                  <p>{{ last_article.content|truncatewords:30 }} </p>
                 </div>
               </a>
             </div>
@@ -34,7 +34,7 @@
               <div class="post-meta">
                 <span class="category">{{ article.category }} </span>
                 <span class="mr-2">{{ article.date_create }} </span> &bullet;
-                <span class="ml-2"><span class="fa fa-comments"></span> 3</span>
+                <span class="ml-2"><span class="fa fa-comments"></span>{{ list_comment|length }} </span>
               </div>
               <h3>{{ article.title }} </h3>
             </div>
