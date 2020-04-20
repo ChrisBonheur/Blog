@@ -18,37 +18,22 @@
           <h2>My Latest Posts</h2>
         </div>
         <div class="col-md-12">
-
-          <div class="post-entry-horzontal">
-            <a href="blog-single.html">
-              <div class="image" style="background-image: url(images/img_5.jpg);"></div>
-              <span class="text">
-                <div class="post-meta">
-                  <span class="category">Lifestyle</span>
-                  <span class="mr-2">March 15, 2018 </span> &bullet;
-                  <span class="ml-2"><span class="fa fa-comments"></span> 3</span>
-                </div>
-                <h2>There’s a Cool New Way for Men to Wear Socks and Sandals</h2>
-              </span>
-            </a>
-          </div>
-          <!-- END post -->
-
-          <div class="post-entry-horzontal">
-            <a href="blog-single.html">
-              <div class="image" style="background-image: url(images/img_4.jpg);"></div>
-              <span class="text">
-                <div class="post-meta">
-                  <span class="category">Food</span>
-                  <span class="mr-2">March 15, 2018 </span> &bullet;
-                  <span class="ml-2"><span class="fa fa-comments"></span> 3</span>
-                </div>
-                <h2>There’s a Cool New Way for Men to Wear Socks and Sandals</h2>
-              </span>
-            </a>
-          </div>
-          <!-- END post -->
-
+          {% for article, comment_count in articles_comment.items %}
+            <div class="post-entry-horzontal">
+              <a href="blog-single.html">
+                <div class="image" style="background-image: url(../../static/blog/images/{{ article.image }});"></div>
+                <span class="text">
+                  <div class="post-meta">
+                    <span class="category">{{ article.category }} </span>
+                    <span class="mr-2">{{ article.date_create}} </span> &bullet;
+                    <span class="ml-2"><span class="fa fa-comments"></span> {{ comment_count}}</span>
+                  </div>
+                  <h2>{{ article.title }}</h2>
+                </span>
+              </a>
+            </div>
+            <!-- END post -->
+          {% endfor %}
         </div>
       </div>
 
@@ -56,11 +41,15 @@
         <div class="col-md-12 text-center">
           <nav aria-label="Page navigation" class="text-center">
             <ul class="pagination">
-              <li class="page-item  active"><a class="page-link" href="#">Prev</a></li>
-              <li class="page-item"><a class="page-link" href="#">1</a></li>
+              {% if all_articles.has_previous %}
+                <li class="page-item  active"><a class="page-link" href="?page={{ all_articles.previous_page_number }}">Prec.</a></li>
+              {% endif %}
+              <!-- <li class="page-item"><a class="page-link" href="#">1</a></li>
               <li class="page-item"><a class="page-link" href="#">2</a></li>
-              <li class="page-item"><a class="page-link" href="#">3</a></li>
-              <li class="page-item"><a class="page-link" href="#">Next</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li> -->
+              {% if all_articles.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ all_articles.next_page_number }}">Suiv.</a></li>
+              {% endif %}              
             </ul>
           </nav>
         </div>

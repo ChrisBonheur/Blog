@@ -37,8 +37,8 @@
             <div class="col-3 search-top">
               <!-- <a href="#"><span class="fa fa-search"></span></a> -->
               <form action="{% url 'blog:search' %}" class="search-top-form" method="get" accept-charset="utf-8">
-                <span class="icon fa fa-search"></span>
                 <input type="text" id="s" placeholder="Rechercher un article...">
+                <input type="submit" value="rechercher">
               </form>
             </div>
           </div>
@@ -106,11 +106,9 @@
                         <div class="bio-body">
                         <h2>Meagan Smith</h2>
                         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Exercitationem facilis sunt repellendus excepturi beatae porro debitis voluptate nulla quo veniam fuga sit molestias minus.</p>
-                        <p><a href="#" class="btn btn-primary btn-sm">Read my bio</a></p>
+                        <p><a href="#" class="btn btn-primary btn-sm">Biographie Aun Weor</a></p>
                         <p class="social">
                             <a href="#" class="p-2"><span class="fa fa-facebook"></span></a>
-                            <a href="#" class="p-2"><span class="fa fa-twitter"></span></a>
-                            <a href="#" class="p-2"><span class="fa fa-instagram"></span></a>
                             <a href="#" class="p-2"><span class="fa fa-youtube-play"></span></a>
                         </p>
                         </div>
@@ -118,18 +116,18 @@
                     </div>
                     <!-- END sidebar-box -->  
                     <div class="sidebar-box">
-                    <h3 class="heading">Les plus lus</h3>
+                    <h3 class="heading">Les plus visités</h3>
                     <div class="post-entry-sidebar">
                         <ul>
-                          {% for article in articles_limit %}
+                          {% for article, comment_count in articles_comments_limit.items %}
                           <li>
                               <a href="">
-                              <img src="static/blog/images/{{ article.image }}" alt="Image placeholder" class="mr-4">
+                              <img src="{% static 'article.image' %}" alt="Image placeholder" class="mr-4">
                               <div class="text">
                                   <h4>{{ article.title }}</h4>
                                   <div class="post-meta">
                                   <span class="mr-2">{{ article.date_create }} </span> &bullet;
-                                  <span class="ml-2"><span class="fa fa-comments"></span> 3</span>
+                                  <span class="ml-2"><span class="fa fa-comments"></span> {{ comment_count }}</span>
                                   </div>
                               </div>
                               </a>
@@ -143,30 +141,12 @@
                     <div class="sidebar-box">
                     <h3 class="heading">Categories</h3>
                     <ul class="categories">
-                       {% for category in categories %}
-                        <li><a href="#">{{ category.name }} <span>(12)</span></a></li>
+                       {% for category, article_count in categories_articles_count.items %}
+                        <li><a href="#">{{ category.name }} <span> {{ article_count }} </span></a></li>
                         {% endfor %}
                     </ul>
                     </div>
                     <!-- END sidebar-box -->
-
-                    <div class="sidebar-box">
-                    <h3 class="heading">Tags</h3>
-                    <ul class="tags">
-                        <li><a href="#">Travel</a></li>
-                        <li><a href="#">Adventure</a></li>
-                        <li><a href="#">Food</a></li>
-                        <li><a href="#">Lifestyle</a></li>
-                        <li><a href="#">Business</a></li>
-                        <li><a href="#">Freelancing</a></li>
-                        <li><a href="#">Travel</a></li>
-                        <li><a href="#">Adventure</a></li>
-                        <li><a href="#">Food</a></li>
-                        <li><a href="#">Lifestyle</a></li>
-                        <li><a href="#">Business</a></li>
-                        <li><a href="#">Freelancing</a></li>
-                    </ul>
-                    </div>
                 </div>
                 <!-- END sidebar -->
 
@@ -192,15 +172,15 @@
                   <h3>Derniers articles publiés</h3>
                   <div class="post-entry-sidebar">
                     <ul>
-                      {% for article in articles_limit %}
+                      {% for article, comment_count in articles_comments_limit.items %}
                       <li>
                         <a href="{% url 'blog:single' article_id=article.id %} ">
-                          <img src="static/blog/images/{{ article.image }}" alt="Image placeholder" class="mr-4">
+                          <img src="{% static 'blog/images/{{ article.image }}' %}" alt="Image placeholder" class="mr-4">
                           <div class="text">
                             <h4>{{ article.title }}</h4>
                             <div class="post-meta">
                               <span class="mr-2">{{ article.date }} </span> &bullet;
-                              <span class="ml-2"><span class="fa fa-comments"></span> 3</span>
+                              <span class="ml-2"><span class="fa fa-comments"></span> {{ comment_count }} </span>
                             </div>
                           </div>
                         </a>

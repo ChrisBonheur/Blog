@@ -14,7 +14,7 @@
                   <div class="post-meta">
                     <span class="category">{{ last_article.category }} </span>
                     <span class="mr-2">{{ last_article.date_create }} </span> &bullet;
-                    <span class="ml-2"><span class="fa fa-comments"></span>{{ last_article_count_comment }} </span>
+                    <span class="ml-2"><span class="fa fa-comments"></span> {{ last_article_count_comment }} </span>
                   </div>
                   <h3>{{ last_article.title }} </h3>
                   <p>{{ last_article.content|truncatewords:30 }} </p>
@@ -27,19 +27,20 @@
       </div>
       <div class="row">
 
-        {% for article in articles_limit %}
+        {% for article, comment_count in articles_comments_limit.items %}
         <div class="col-md-6 col-lg-4">
           <a href="{% url 'blog:single' article_id=1 %}" class="a-block d-flex align-items-center height-md" style="background-image: url('static/blog/images/{{ article.image }}'); ">
             <div class="text">
               <div class="post-meta">
                 <span class="category">{{ article.category }} </span>
                 <span class="mr-2">{{ article.date_create }} </span> &bullet;
-                <span class="ml-2"><span class="fa fa-comments"></span>{{ list_comment|length }} </span>
+                <span class="ml-2"><span class="fa fa-comments"></span> {{ comment_count }} </span>
               </div>
               <h3>{{ article.title }} </h3>
             </div>
           </a>
         </div>
+        {% if forloop.counter|divisibleby:2 %} <div class="clearfix"></div>{% endif %}
         {% endfor %}
       </div>
     </div>
