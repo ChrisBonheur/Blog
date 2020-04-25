@@ -4,22 +4,44 @@ from random import choice
 
 from .models import Article, Category, Comment, ResponseComment, Utilisateur
 
+def searching_article(indice_to_find):
+    result_search = []#list of search result
+    # searching articles by title
+    articles_by_title = Article.objects.filter(title__icontains=indice_to_find)
+    result_search += (articles_by_title)#adding result to resultsearch
+    #if not result we continues searching with article by category
+    if not articles_by_title:
+        #searching by category
+        categories = Category.objects.filter(name__icontains=indice_to_find)
+        # loop to find all articles with categories name found
+        for category in categories:
+            articles_by_category = Article.objects.filter(category=category)
+            result_search += articles_by_category#adding result to resultsearch
+    
+    return result_search    
 
-def articles_comment_count(request, article_by_page, filter_name=""):
-    """This function create a list with articles by page"""
+def get_random_articles(nbr_of_article, list_aricles):
+    # this function a random list of articles with their comments count in dict
+    random_post_comment = {}
+    for i in range(nbr_of_article):
+        article = choice(list_aricles)
+        comment_count = Comment.objects.filter(article__title=article).count()
+        random_post_comment[article] = comment_count
+    
+    return random_post_comment;
+
+def articles_comment_count(request, nbr_article_by_page, filter_name=""):
+    """This function create a list with articles by page and return
+    two element variable must be like a, b = articles_comment_count
+    """
     #verifictaion if filter exist to return articles with filter or no
     if filter_name == "":
         all_articles_list = Article.objects.all()
     else:
-        all_articles_list = Article.objects.filter(title__icontains=filter_name)
-        if not all_articles_list.exists():
-            categories = Category.objects.filter(name__icontains=filter_name)
-            all_articles_list = Article.objects.filter(category=categories)
-            if not all_articles_list.exists():
-                return False
-                     
+        all_articles_list = searching_article(filter_name)
+               
     #cretaing paginator with all_articles
-    paginator = Paginator(all_articles_list, article_by_page)
+    paginator = Paginator(all_articles_list, nbr_article_by_page)
     page = request.GET.get('page')
     try:
         all_articles = paginator.page(page)
@@ -74,15 +96,9 @@ def index(request):
     # get total comment for last article
     last_article_count_comment = Comment.objects.filter(article__id=last_article.id)
     last_article_count_comment = last_article_count_comment.count()
-   
-    # random posts for bloc other posts
-    random_post_comment = {}
-    for i in range(3):
-        article = choice(all_articles)
-        comment_count = Comment.objects.filter(article__title=article).count()
-        random_post_comment[article] = comment_count
         
     context = {
+        "block_title": "Dernier article publié",
         "articles_comments_limit": articles_comments_limit,
         "articles_comments": articles_comment,
         "all_articles": all_articles,
@@ -90,7 +106,7 @@ def index(request):
         "last_article_count_comment": last_article_count_comment,
         "categories_articles_count": categories_articles,
         "categories": categories,
-        "random_posts": random_post_comment
+        "random_posts": get_random_articles(2, all_articles)
     }
     
     return render(request, 'blog/index.html', context)
@@ -114,6 +130,7 @@ def about(request):
     
     
     context = {
+        "block_title": "A PROPOS",
         "articles_comment": articles_comment,
         "all_articles": all_articles,
         "categories": categories,
@@ -123,26 +140,41 @@ def about(request):
     return render(request, 'blog/about.html', context)
 
 def contact(request):
+    categories, categories_articles = categories_articles_count()
     context = {
-        
+        "block_title": "Contact",
+        "articles_comments_limit": get_articles_limit(2),
+        "categories_articles_count": categories_articles,
+        "categories": categories
     }
     return render(request, 'blog/contact.html', context)
 
 def search(request):
     query = request.GET.get('query')
     query = str(query)
-    title = "Résultat pour la recherche {}".format(query)
+    title = 'Résultat pour la recherche "{}"'.format(query)
     if not query:
-        articles_comments = articles_comment_count(request, 2)
+        all_articles, articles_comments = articles_comment_count(request, 2)
     else:
-        articles_comments = articles_comment_count(request, 2, query)
+        all_articles, articles_comments = articles_comment_count(request, 2, query)
         
-        if not articles_comments == False:
-            title = "Aucun résultat pour la recherche {}".format(query)
+        if not articles_comments and not all_articles:
+            title = 'Aucun résultat pour la recherche "{}"'.format(query)
+    
+    categories, categories_articles = categories_articles_count()#getting categories with theirs total articless
+    #getting articles => comments dict without query
+    articles_list, comments_list = articles_comment_count(request, 4)
     
     context = {
-        "articles_comment": articles_comments,
-        "title": title
+        "block_title": title,
+        "articles_comments": articles_comments,
+        "all_articles": all_articles,
+        "title": title,
+        "random_posts": get_random_articles(4, articles_list),
+        "articles_comments_limit": get_articles_limit(3),
+        "categories_articles_count": categories_articles,
+        "categories": categories,
+        "query": query
     }
     
     return render(request, 'blog/search.html', context)

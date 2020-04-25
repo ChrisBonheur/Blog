@@ -20,8 +20,6 @@
   </head>
   <body>
     
-
-
     <header role="banner">
       <div class="top-bar">
         <div class="container">
@@ -37,7 +35,7 @@
             <div class="col-3 search-top">
               <!-- <a href="#"><span class="fa fa-search"></span></a> -->
               <form action="{% url 'blog:search' %}" class="search-top-form" method="get" accept-charset="utf-8">
-                <input type="text" id="s" placeholder="Rechercher un article...">
+                <input type="text" id="s" placeholder="Rechercher un article..." name="query">
                 <input type="submit" value="rechercher">
               </form>
             </div>
@@ -66,7 +64,7 @@
                 <a class="nav-link dropdown-toggle" href="category.html" id="dropdown05" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Categories</a>
                 <div class="dropdown-menu" aria-labelledby="dropdown05">
                   {% for category in categories %}
-                  <a class="dropdown-item" href="category.html">{{ category }}</a>
+                  <a class="dropdown-item" href="{% url 'blog:search' %}?query={{ category.name }}">{{ category }}</a>
                   {% endfor %}
                 </div>
 
@@ -84,6 +82,9 @@
       </nav>
     </header>
     
+    <div class="container">
+      <h2>{{ block_title }} </h2>
+    </div>
     <!-- if block head insert it here -->
     {% block sectionHead %}{% endblock %}
     <!-- end for if block -->
@@ -92,65 +93,116 @@
         <div class="container">
 
             <div class="row blog-entries">
-                
-                <!-- insert block for principal variable page content -->
-                {% block content %}{% endblock %}
-                <!-- end for insert block -->
-                
-                <div class="col-md-12 col-lg-4 sidebar">
+              
+              <!-- insert block for principal variable page content -->
+              {% block content %}{% endblock %}
+              <!-- end for insert block -->
+              
+              <div class="col-md-12 col-lg-4 sidebar">
 
-                    <!-- END sidebar-box -->
-                    <div class="sidebar-box">
-                    <div class="bio text-center">
-                        <img src="{% static 'blog/images/person_1.jpg %'}" alt="Image Placeholder" class="img-fluid">
-                        <div class="bio-body">
-                        <h2>Meagan Smith</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Exercitationem facilis sunt repellendus excepturi beatae porro debitis voluptate nulla quo veniam fuga sit molestias minus.</p>
-                        <p><a href="#" class="btn btn-primary btn-sm">Biographie Aun Weor</a></p>
-                        <p class="social">
-                            <a href="#" class="p-2"><span class="fa fa-facebook"></span></a>
-                            <a href="#" class="p-2"><span class="fa fa-youtube-play"></span></a>
-                        </p>
-                        </div>
-                    </div>
-                    </div>
-                    <!-- END sidebar-box -->  
-                    <div class="sidebar-box">
-                    <h3 class="heading">Les plus visités</h3>
-                    <div class="post-entry-sidebar">
-                        <ul>
-                          {% for article, comment_count in articles_comments_limit.items %}
-                          <li>
-                              <a href="">
-                              <img src="{% static 'article.image' %}" alt="Image placeholder" class="mr-4">
-                              <div class="text">
-                                  <h4>{{ article.title }}</h4>
-                                  <div class="post-meta">
-                                  <span class="mr-2">{{ article.date_create }} </span> &bullet;
-                                  <span class="ml-2"><span class="fa fa-comments"></span> {{ comment_count }}</span>
-                                  </div>
-                              </div>
-                              </a>
-                          </li>
-                          {% endfor %}
-                        </ul>
-                    </div>
-                    </div>
-                    <!-- END sidebar-box -->
-
-                    <div class="sidebar-box">
-                    <h3 class="heading">Categories</h3>
-                    <ul class="categories">
-                       {% for category, article_count in categories_articles_count.items %}
-                        <li><a href="#">{{ category.name }} <span> {{ article_count }} </span></a></li>
+                  <!-- END sidebar-box -->
+                  <div class="sidebar-box">
+                  <div class="bio text-center">
+                      <img src="{% static 'blog/images/person_1.jpg' %}" alt="Image Placeholder" class="img-fluid">
+                      <div class="bio-body">
+                      <h2>Meagan Smith</h2>
+                      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Exercitationem facilis sunt repellendus excepturi beatae porro debitis voluptate nulla quo veniam fuga sit molestias minus.</p>
+                      <p><a href="#" class="btn btn-primary btn-sm">Biographie Aun Weor</a></p>
+                      <p class="social">
+                          <a href="#" class="p-2"><span class="fa fa-facebook"></span></a>
+                          <a href="#" class="p-2"><span class="fa fa-youtube-play"></span></a>
+                      </p>
+                      </div>
+                  </div>
+                  </div>
+                  <!-- END sidebar-box -->  
+                  <div class="sidebar-box">
+                  <h3 class="heading">Les plus visités</h3>
+                  <div class="post-entry-sidebar">
+                      <ul>
+                        {% for article, comment_count in articles_comments_limit.items %}
+                        <li>
+                            <a href="">
+                            <img src="{% static 'blog/images/' + %}{{article.image}}" alt="Image placeholder" class="mr-4">
+                            <div class="text">
+                                <h4>{{ article.title }}</h4>
+                                <div class="post-meta">
+                                <span class="mr-2">{{ article.date_create }} </span> &bullet;
+                                <span class="ml-2"><span class="fa fa-comments"></span> {{ comment_count }}</span>
+                                </div>
+                            </div>
+                            </a>
+                        </li>
                         {% endfor %}
-                    </ul>
-                    </div>
-                    <!-- END sidebar-box -->
-                </div>
-                <!-- END sidebar -->
+                      </ul>
+                  </div>
+                  </div>
+                  <!-- END sidebar-box -->
+
+                  <div class="sidebar-box">
+                  <h3 class="heading">Categories</h3>
+                  <ul class="categories">
+                      {% for category, article_count in categories_articles_count.items %}
+                      <li><a href="{% url 'blog:search' %}?query={{ category.name }}">{{ category.name }} <span> {{ article_count }} </span></a></li>
+                      {% endfor %}
+                  </ul>
+                  </div>
+                  <!-- END sidebar-box -->
+              </div>
+              <!-- END sidebar -->
 
             </div>
+            {% if single_article %}
+            <section class="py-5">
+                <div class="">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <h2 class="mb-3 ">Articles similaires</h2>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 col-lg-4">
+                      <a href="#" class="a-block d-flex align-items-center height-md" style="background-image: url()">
+                        <div class="text">
+                          <div class="post-meta">
+                            <span class="category">Lifestyle</span>
+                            <span class="mr-2">March 15, 2018 </span> &bullet;
+                            <span class="ml-2"><span class="fa fa-comments"></span> 3</span>
+                          </div>
+                          <h3>There’s a Cool New Way for Men to Wear Socks and Sandals</h3>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                      <a href="#" class="a-block d-flex align-items-center height-md" style="background-image: url('images/img_3.jpg'); ">
+                        <div class="text">
+                          <div class="post-meta">
+                            <span class="category">Travel</span>
+                            <span class="mr-2">March 15, 2018 </span> &bullet;
+                            <span class="ml-2"><span class="fa fa-comments"></span> 3</span>
+                          </div>
+                          <h3>There’s a Cool New Way for Men to Wear Socks and Sandals</h3>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                      <a href="#" class="a-block d-flex align-items-center height-md" style="background-image: url('images/img_4.jpg'); ">
+                        <div class="text">
+                          <div class="post-meta">
+                            <span class="category">Food</span>
+                            <span class="mr-2">March 15, 2018 </span> &bullet;
+                            <span class="ml-2"><span class="fa fa-comments"></span> 3</span>
+                          </div>
+                          <h3>There’s a Cool New Way for Men to Wear Socks and Sandals</h3>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+            
+            
+              </section>
+            {% endif %}
         </div>
     </section>
 
@@ -175,7 +227,7 @@
                       {% for article, comment_count in articles_comments_limit.items %}
                       <li>
                         <a href="{% url 'blog:single' article_id=article.id %} ">
-                          <img src="{% static 'blog/images/{{ article.image }}' %}" alt="Image placeholder" class="mr-4">
+                          <img src="{% static 'blog/images/' + %}{{ article.image }}" alt="Image placeholder" class="mr-4">
                           <div class="text">
                             <h4>{{ article.title }}</h4>
                             <div class="post-meta">

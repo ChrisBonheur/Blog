@@ -1,11 +1,10 @@
 {% load static %}
 <div class="col-md-12 col-lg-8 main-content">
   <div class="row">
-
     {% for article, comment_count in articles_comments.items %}
     <div class="col-md-6">
       <a href="{% url 'blog:single' article_id=article.id %}" class="blog-entry element-animate" data-animate-effect="fadeIn">
-        <img src="static/blog/images/{{ article.image }}" alt="Image placeholder">
+        <img src="{% static 'blog/images/' + %}{{ article.image }}" alt="Image placeholder">
         <div class="blog-content-body">
           <div class="post-meta">
             <span class="category">{{ article.category }}</span>
@@ -25,13 +24,13 @@
       <nav aria-label="Page navigation" class="text-center">
         <ul class="pagination">
           {% if all_articles.has_previous %}
-            <li class="page-item "><a class="page-link" href="?page={{ all_articles.previous_page_number }}">Préc</a></li>
+            <li class="page-item "><a class="page-link" href="?{% if query %}query={{ query }}&amp;{% endif %}page={{ all_articles.previous_page_number }}">Préc</a></li>
           {% endif %}
           <!-- <li class="page-item"><a class="page-link" href="#">1</a></li>
           <li class="page-item"><a class="page-link" href="#">2</a></li>
           <li class="page-item"><a class="page-link" href="#">3</a></li> -->
           {% if all_articles.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ all_articles.next_page_number }}">Suiv</a></li>
+            <li class="page-item"><a class="page-link" href="?{% if query %}query={{ query }}&amp;{% endif %}page={{ all_articles.next_page_number }}">Suiv</a></li>
           {% endif %}
         </ul>
       </nav>
@@ -42,7 +41,7 @@
   <div class="row mb-5 mt-5">
 
     <div class="col-md-12">
-      <h2 class="mb-4">Autres Postes</h2>
+      <h2 class="mb-4">Autres Articles</h2>
     </div>
 
     <div class="col-md-12">
@@ -50,7 +49,7 @@
       {% for article, comment_count in random_posts.items %}
       <div class="post-entry-horzontal">
         <a href="{% url 'blog:single' article_id=article.id %} ">
-          <div class="image element-animate"  data-animate-effect="fadeIn" style="background-image: url(static/blog/images/{{ article.image }});"></div>
+          <div class="image element-animate"  data-animate-effect="fadeIn" style="background-image: url({% static 'blog/images/' + %}{{ article.image }});"></div>
           <span class="text">
             <div class="post-meta">
               <span class="category">{{ article.category }}</span>
@@ -66,7 +65,4 @@
 
     </div>
   </div>
-
-  
-
 </div>
