@@ -1,6 +1,7 @@
 {% extends 'blog/base.html' %}
 
 {% block sectionHead %}
+{% load static %}
   <section class="site-section pt-5">
     <div class="container">
       <div class="row">
@@ -9,7 +10,7 @@
           <div class="owl-carousel owl-theme slider">
             
             <div>
-              <a href="{% url 'blog:single' article_id=last_article.id %} " class="a-block d-flex align-items-center height-lg" style="background-image: url('static/blog/images/{{ last_article.image }}'); ">
+              <a href="{% url 'blog:single' article_id=last_article.id %} " class="a-block d-flex align-items-center height-lg" style="background-image: url({% static 'blog/images/' + %}{{ last_article.image }}); ">
                 <div class="text half-to-full">
                   <div class="post-meta">
                     <span class="category">{{ last_article.category }} </span>
@@ -29,10 +30,10 @@
 
         {% for article, comment_count in articles_comments_limit.items %}
         <div class="col-md-6 col-lg-4">
-          <a href="{% url 'blog:single' article_id=1 %}" class="a-block d-flex align-items-center height-md" style="background-image: url('static/blog/images/{{ article.image }}'); ">
+          <a href="{% url 'blog:single' article_id=article.id %}" class="a-block d-flex align-items-center height-md" style="background-image: url({% static 'blog/images/' + %}{{ article.image }}); ">
             <div class="text">
               <div class="post-meta">
-                <span class="category">{{ article.category }} </span>
+                <span class="category">{{ article.category.name }} </span>
                 <span class="mr-2">{{ article.date_create }} </span> &bullet;
                 <span class="ml-2"><span class="fa fa-comments"></span> {{ comment_count }} </span>
               </div>

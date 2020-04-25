@@ -179,3 +179,20 @@
 
 
 })(jQuery);
+
+function events(){
+  $responses = $('#response');
+  $children = $('.children')
+  $responses.on('click', function(e){
+      e.preventDefault()
+      if ($children.hide()){
+          $children.show();
+          console.log("its show now");
+      }else{
+          $children.hide();
+          console.log('it s hide now');
+      }
+  });
+}
+
+events();

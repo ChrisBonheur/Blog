@@ -25,7 +25,7 @@ def get_random_articles(nbr_of_article, list_aricles):
     random_post_comment = {}
     for i in range(nbr_of_article):
         article = choice(list_aricles)
-        comment_count = Comment.objects.filter(article__title=article).count()
+        comment_count = Comment.objects.filter(article__title=article.title).count()
         random_post_comment[article] = comment_count
     
     return random_post_comment;
@@ -43,19 +43,24 @@ def articles_comment_count(request, nbr_article_by_page, filter_name=""):
     #cretaing paginator with all_articles
     paginator = Paginator(all_articles_list, nbr_article_by_page)
     page = request.GET.get('page')
+    default_page = 1
     try:
         all_articles = paginator.page(page)
     except PageNotAnInteger:
-        all_articles = paginator.page(1)
+        all_articles = paginator.page(default_page)
     except EmptyPage:
         all_articles = paginator.page(paginator.num_pages)
 
     #creating of dictionnary (article and their comment count)    
     articles_comments = {} #this for all article and their comment count
-    for article in all_articles:
+    for article in all_articles_list:
         #this loop add to dict article_comment the key and value(article and comment count)
-        comment_count = Comment.objects.filter(article__title=article.title).count()
-        articles_comments[article] = comment_count
+        comments = Comment.objects.filter(article__title=article.title)
+        responses_comment = ResponseComment.objects.filter(comment__article=article)
+        #sum of comment and their response to get total comments_count()
+        comments_count = comments.count() + responses_comment.count()
+
+        articles_comments[article] = comments_count
     
     return all_articles, articles_comments
 
@@ -85,6 +90,15 @@ def get_articles_limit(limit_number):
     
     return articles_comments_limit    
 
+def get_comments_response(article_title):
+    comments = Comment.objects.filter(article__title=article_title)
+    comments_responses = {}
+    for comment in comments:
+        responses_comment = ResponseComment.objects.filter(comment__article=comment.article)
+        comments_responses[comment] = responses_comment
+
+    return comments_responses 
+
 def index(request):
     last_article = Article.objects.last()          
     articles_comments_limit = get_articles_limit(3)#getting limited articles by 3 artilces
@@ -113,11 +127,42 @@ def index(request):
 
 def single_article(request, article_id):
     article = Article.objects.get(pk=article_id)
+
+    if request.method == "POST" :
+        email = request.POST.get('email')
+        name = request.POST.get('name')
+        message = request.POST.get('message')
+        utilisateur = Utilisateur.objects.filter(email=email)
+        
+        if not utilisateur:
+            utilisateur = Utilisateur.objects.create(
+                username=name,
+                email=email,
+                password=1234,
+                gender="Gender"
+                )
+        else:
+            utilisateur = Utilisateur.objects.get(email=email)
+        
+        comment = Comment.objects.create(
+            content=message,
+            utilisateur=utilisateur,
+            article=article
+            )
+
+    comments_responses = get_comments_response(article)
+    articles_comments = get_articles_limit(3)
+    categories, categories_articles = categories_articles_count()
+    larticle, article_comments = articles_comment_count(request, 1, article.title)
+
     context = {
-        "article_date": article.date_create,
-        "article_title": article.title,
-        "article_content": article.content,
-        "article_category": article.category
+        "block_title": "Article",
+        "comments_responses": comments_responses,
+        "article": article,
+        "comments_count": article_comments[article],
+        "articles_comments_limit": articles_comments, 
+        "categories_articles_count": categories_articles,
+        "categories": categories
     }
     return render(request, 'blog/blog-single.html', context)
 
@@ -178,3 +223,5 @@ def search(request):
     }
     
     return render(request, 'blog/search.html', context)
+
+

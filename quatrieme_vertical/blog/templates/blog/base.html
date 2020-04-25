@@ -122,7 +122,7 @@
                       <ul>
                         {% for article, comment_count in articles_comments_limit.items %}
                         <li>
-                            <a href="">
+                            <a href="{% url 'blog:single' article_id=article.id %}">
                             <img src="{% static 'blog/images/' + %}{{article.image}}" alt="Image placeholder" class="mr-4">
                             <div class="text">
                                 <h4>{{ article.title }}</h4>
@@ -248,10 +248,10 @@
                   <div class="mb-5">
                     <h3>Racourcis</h3>
                     <ul class="list-unstyled">
-                      <li><a href="#">Acceuil</a></li>
-                      <li><a href="#">A propos</a></li>
+                      <li><a href="{% url 'blog:home' %} ">Acceuil</a></li>
+                      <li><a href="{% url 'blog:about' %} ">A propos</a></li>
                       <li><a href="#">Categories</a></li>
-                      <li><a href="#">Contact</a></li>
+                      <li><a href="{% url 'blog:contact' %}">Contact</a></li>
                     </ul>
                   </div>
                   
