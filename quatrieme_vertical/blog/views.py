@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from random import choice
 
 from .models import Article, Category, Comment, ResponseComment, Utilisateur
+from .forms import CommentForm
 
 def searching_article(indice_to_find):
     result_search = []#list of search result
@@ -30,30 +31,34 @@ def get_random_articles(nbr_of_article, list_aricles):
     
     return random_post_comment;
 
+def create_paginator(request, list_to_pagine, nbr_article_by_page):
+    paginator = Paginator(list_to_pagine, nbr_article_by_page)
+    page = request.GET.get('page')
+    default_page = 1
+    try:
+        list_to_pagine = paginator.page(page)
+    except PageNotAnInteger:
+        list_to_pagine = paginator.page(default_page)
+    except EmptyPage:
+        list_to_pagine = paginator.page(paginator.num_pages)
+
+    return list_to_pagine
+
 def articles_comment_count(request, nbr_article_by_page, filter_name=""):
     """This function create a list with articles by page and return
     two element variable must be like a, b = articles_comment_count
     """
     #verifictaion if filter exist to return articles with filter or no
     if filter_name == "":
-        all_articles_list = Article.objects.all()
+        all_articles_list = Article.objects.all().order_by("-date_create")
     else:
         all_articles_list = searching_article(filter_name)
                
     #cretaing paginator with all_articles
-    paginator = Paginator(all_articles_list, nbr_article_by_page)
-    page = request.GET.get('page')
-    default_page = 1
-    try:
-        all_articles = paginator.page(page)
-    except PageNotAnInteger:
-        all_articles = paginator.page(default_page)
-    except EmptyPage:
-        all_articles = paginator.page(paginator.num_pages)
-
+    all_articles = create_paginator(request, all_articles_list, nbr_article_by_page)
     #creating of dictionnary (article and their comment count)    
     articles_comments = {} #this for all article and their comment count
-    for article in all_articles_list:
+    for article in all_articles:
         #this loop add to dict article_comment the key and value(article and comment count)
         comments = Comment.objects.filter(article__title=article.title)
         responses_comment = ResponseComment.objects.filter(comment__article=article)
@@ -90,97 +95,94 @@ def get_articles_limit(limit_number):
     
     return articles_comments_limit    
 
-def get_comments_response(article_title):
+def get_comments_response(request, article_title, nbr_article_by_page, comment_id=""):
+    """This function get comment and their response and return in paginator a 
+    dict comment: responsesComments and comments to create a button to naviguate on pages""" 
     comments = Comment.objects.filter(article__title=article_title)
+    #we try to verif if we want just to get one comment
+    if comment_id != "":
+        comments = Comment.objects.filter(pk=comment_id)
+
+    comments = create_paginator(request, comments, nbr_article_by_page)
     comments_responses = {}
     for comment in comments:
-        responses_comment = ResponseComment.objects.filter(comment__article=comment.article)
+        responses_comment = ResponseComment.objects.filter(comment__id=comment.id)
+        # responses_comment = create_paginator(request, responses_comment, 8)
         comments_responses[comment] = responses_comment
 
-    return comments_responses 
+    return comments, comments_responses 
 
 def index(request):
-    last_article = Article.objects.last()          
-    articles_comments_limit = get_articles_limit(3)#getting limited articles by 3 artilces
-    #getting of table categories and dict of categories with their count articles
-    categories, categories_articles = categories_articles_count()
-    #getting of table articles and dict of articles with their count comments
-    all_articles, articles_comment = articles_comment_count(request, 2)
-    
-    # get total comment for last article
-    last_article_count_comment = Comment.objects.filter(article__id=last_article.id)
-    last_article_count_comment = last_article_count_comment.count()
+    last_article = Article.objects.last()         
         
     context = {
         "block_title": "Dernier article publié",
-        "articles_comments_limit": articles_comments_limit,
-        "articles_comments": articles_comment,
-        "all_articles": all_articles,
+        "articles": Article.objects.all(),
+        "comments": Comment.objects.all(),
         "last_article": last_article,
-        "last_article_count_comment": last_article_count_comment,
-        "categories_articles_count": categories_articles,
-        "categories": categories,
-        "random_posts": get_random_articles(2, all_articles)
+        "categories": Category.objects.all(),
+        "random_posts": get_random_articles(2, Article.objects.all())
     }
     
     return render(request, 'blog/index.html', context)
 
-def single_article(request, article_id):
+def read_article(request, article_id):
     article = Article.objects.get(pk=article_id)
 
-    if request.method == "POST" :
-        email = request.POST.get('email')
-        name = request.POST.get('name')
-        message = request.POST.get('message')
-        utilisateur = Utilisateur.objects.filter(email=email)
-        
-        if not utilisateur:
-            utilisateur = Utilisateur.objects.create(
-                username=name,
-                email=email,
-                password=1234,
-                gender="Gender"
-                )
-        else:
-            utilisateur = Utilisateur.objects.get(email=email)
-        
-        comment = Comment.objects.create(
-            content=message,
-            utilisateur=utilisateur,
-            article=article
-            )
+    response = request.GET.get('response')
+    if not response:
+        response = "hide"
 
-    comments_responses = get_comments_response(article)
-    articles_comments = get_articles_limit(3)
-    categories, categories_articles = categories_articles_count()
-    larticle, article_comments = articles_comment_count(request, 1, article.title)
+    form = CommentForm()
 
     context = {
         "block_title": "Article",
-        "comments_responses": comments_responses,
+        "comments": Comment.objects.all(),
         "article": article,
-        "comments_count": article_comments[article],
-        "articles_comments_limit": articles_comments, 
-        "categories_articles_count": categories_articles,
-        "categories": categories
+        "response": response,
+        "articles": Article.objects.all(),
+        "categories": Category.objects.all(),
+        "ResponseComment": ResponseComment.objects.all(),
+        "form": form
     }
+
+    if request.method == "POST":
+        if CommentForm(request.POST).is_valid():
+            email = request.POST.get('email')
+            name = request.POST.get('name')
+            message = request.POST.get('message')
+            utilisateur = Utilisateur.objects.filter(email=email)
+        
+            if not utilisateur:
+                utilisateur = Utilisateur.objects.create(
+                    username=name,
+                    email=email,
+                    password=1234,
+                    gender="Gender"
+                    )
+            else:
+                utilisateur = Utilisateur.objects.get(email=email)
+            
+            comment = Comment.objects.create(
+                content=message,
+                utilisateur=utilisateur,
+                article=article
+                )
+            return redirect('/blog/' + article_id + '/#formulaire')
+            
+        else:
+            context['errors'] = form.errors.items()
+
+
     return render(request, 'blog/blog-single.html', context)
 
 def about(request):
     """This function customise the about.html page"""
-    #getting of categories and categories with articles count
-    categories, categories_articles = categories_articles_count()
-    #getting all articles and all articles with their comment count
-    all_articles, articles_comment = articles_comment_count(request, 3)
-    
-    
     context = {
         "block_title": "A PROPOS",
-        "articles_comment": articles_comment,
-        "all_articles": all_articles,
-        "categories": categories,
-        "categories_articles_count": categories_articles,
-        "articles_comments_limit": get_articles_limit(3)
+        "articles": Article.objects.all(),
+        "comments": Comment.objects.all(),
+        "categories": Category.objects.all(),
     }
     return render(request, 'blog/about.html', context)
 
@@ -188,9 +190,9 @@ def contact(request):
     categories, categories_articles = categories_articles_count()
     context = {
         "block_title": "Contact",
-        "articles_comments_limit": get_articles_limit(2),
-        "categories_articles_count": categories_articles,
-        "categories": categories
+        "articles": Article.objects.all(),
+        "comments": Comment.objects.all(),
+        "categories": Category.objects.all()
     }
     return render(request, 'blog/contact.html', context)
 
@@ -212,6 +214,8 @@ def search(request):
     
     context = {
         "block_title": title,
+        "articles": Article.objects.all(),
+        "comments": Comment.objects.all(),
         "articles_comments": articles_comments,
         "all_articles": all_articles,
         "title": title,

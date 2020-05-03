@@ -1,5 +1,6 @@
 {% extends 'blog/base.html' %}
 {% block content %}
+{% load blog_extras %}
     <div class="col-md-12 col-lg-8 main-content">
       
       <div class="row">
@@ -18,7 +19,7 @@
           <h2>My Latest Posts</h2>
         </div>
         <div class="col-md-12">
-          {% for article, comment_count in articles_comment.items %}
+          {% for article in articles|limit_table:4 %}
             <div class="post-entry-horzontal">
               <a href="blog-single.html">
                 <div class="image" style="background-image: url(../../static/blog/images/{{ article.image }});"></div>
@@ -26,7 +27,7 @@
                   <div class="post-meta">
                     <span class="category">{{ article.category }} </span>
                     <span class="mr-2">{{ article.date_create}} </span> &bullet;
-                    <span class="ml-2"><span class="fa fa-comments"></span> {{ comment_count}}</span>
+                    <span class="ml-2"><span class="fa fa-comments"></span> {{ comments|comments_count_filter:article.id }}</span>
                   </div>
                   <h2>{{ article.title }}</h2>
                 </span>

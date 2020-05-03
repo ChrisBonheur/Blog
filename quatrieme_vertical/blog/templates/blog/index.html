@@ -1,7 +1,7 @@
 {% extends 'blog/base.html' %}
 
 {% block sectionHead %}
-{% load static %}
+{% load static blog_extras %}
   <section class="site-section pt-5">
     <div class="container">
       <div class="row">
@@ -15,10 +15,10 @@
                   <div class="post-meta">
                     <span class="category">{{ last_article.category }} </span>
                     <span class="mr-2">{{ last_article.date_create }} </span> &bullet;
-                    <span class="ml-2"><span class="fa fa-comments"></span> {{ last_article_count_comment }} </span>
+                    <span class="ml-2"><span class="fa fa-comments"></span> {{ comments|comments_count_filter:last_article.id }} </span>
                   </div>
                   <h3>{{ last_article.title }} </h3>
-                  <p>{{ last_article.content|truncatewords:30 }} </p>
+                  <p>{{ last_article.content|truncatewords:30 }}</p>
                 </div>
               </a>
             </div>
@@ -28,14 +28,14 @@
       </div>
       <div class="row">
 
-        {% for article, comment_count in articles_comments_limit.items %}
+        {% for article in articles|limit_table:3 %}
         <div class="col-md-6 col-lg-4">
           <a href="{% url 'blog:single' article_id=article.id %}" class="a-block d-flex align-items-center height-md" style="background-image: url({% static 'blog/images/' + %}{{ article.image }}); ">
             <div class="text">
               <div class="post-meta">
                 <span class="category">{{ article.category.name }} </span>
                 <span class="mr-2">{{ article.date_create }} </span> &bullet;
-                <span class="ml-2"><span class="fa fa-comments"></span> {{ comment_count }} </span>
+                <span class="ml-2"><span class="fa fa-comments"></span> {{ comments|comments_count_filter:article.id }} </span>
               </div>
               <h3>{{ article.title }} </h3>
             </div>
