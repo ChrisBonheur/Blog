@@ -59,7 +59,7 @@
                   <div class="meta">{{ comment.date_create }}</div>
                   <p>{{ comment.content }} </p>
                   <p>
-                    <a href="#formulaire" class="reply">Répondre</a>
+                    <a href="?response=hide#formulaire" class="reply">Répondre</a>
                     <a href="?response=hide#comments"><span class="fa fa-comments"></span> {{ ResponseComment|responses_count_filter:comment.id }} </span></a>
                   </p>
                 </div>
@@ -94,7 +94,7 @@
                   <div class="meta">{{ comment.date_create }}</div>
                   <p>{{ comment.content }} </p>
                   <p>
-                    <a href="#formulaire" class="reply">Répondre</a>
+                    <a href="?response={{ comment.id }}#formulaire" class="reply">Répondre</a>
                     <a href="?response={{ comment.id }}#comments"><span class="fa fa-comments"></span> {{ ResponseComment|responses_count_filter:comment.id }} </span></a>
                   </p>
                 </div>

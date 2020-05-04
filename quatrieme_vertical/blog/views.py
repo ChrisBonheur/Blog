@@ -31,18 +31,21 @@ def get_random_articles(nbr_of_article, list_aricles):
     
     return random_post_comment;
 
-def create_paginator(request, list_to_pagine, nbr_article_by_page):
-    paginator = Paginator(list_to_pagine, nbr_article_by_page)
-    page = request.GET.get('page')
+def get_page(request):
     default_page = 1
-    try:
-        list_to_pagine = paginator.page(page)
-    except PageNotAnInteger:
-        list_to_pagine = paginator.page(default_page)
-    except EmptyPage:
-        list_to_pagine = paginator.page(paginator.num_pages)
+    page = request.GET.get('page')
 
-    return list_to_pagine
+    if page:
+        try:
+            page = int(page)
+        except PageNotAnInteger:
+            page = default_page
+        except EmptyPage:
+            page = default_page
+    else:
+        page = default_page
+
+    return page
 
 def articles_comment_count(request, nbr_article_by_page, filter_name=""):
     """This function create a list with articles by page and return
@@ -114,14 +117,18 @@ def get_comments_response(request, article_title, nbr_article_by_page, comment_i
 
 def index(request):
     last_article = Article.objects.last()         
-        
+    articles = Article.objects.all()
+    
+    page = get_page(request)
+
     context = {
         "block_title": "Dernier article publié",
-        "articles": Article.objects.all(),
+        "articles": articles,
         "comments": Comment.objects.all(),
         "last_article": last_article,
         "categories": Category.objects.all(),
-        "random_posts": get_random_articles(2, Article.objects.all())
+        "random_posts": get_random_articles(2, articles),
+        "page": page
     }
     
     return render(request, 'blog/index.html', context)
@@ -163,11 +170,25 @@ def read_article(request, article_id):
             else:
                 utilisateur = Utilisateur.objects.get(email=email)
             
-            comment = Comment.objects.create(
-                content=message,
-                utilisateur=utilisateur,
-                article=article
-                )
+            #verification if response from comment is hide or id for comment
+            if response == "hide":
+                comment = Comment.objects.create(
+                    content=message,
+                    utilisateur=utilisateur,
+                    article=article
+                    )
+            else:
+                try:
+                    comment = Comment.objects.get(pk=response)
+                except Exception as e:
+                    raise e
+                else:
+                    comment_answer = ResponseComment.objects.create(
+                        content=message,
+                        utilisateur=utilisateur,
+                        comment=comment
+                        )
+
             return redirect('/blog/' + article_id + '/#formulaire')
             
         else:
@@ -200,30 +221,26 @@ def search(request):
     query = request.GET.get('query')
     query = str(query)
     title = 'Résultat pour la recherche "{}"'.format(query)
+    
     if not query:
-        all_articles, articles_comments = articles_comment_count(request, 2)
+        articles = Article.objects.all()
     else:
-        all_articles, articles_comments = articles_comment_count(request, 2, query)
-        
-        if not articles_comments and not all_articles:
-            title = 'Aucun résultat pour la recherche "{}"'.format(query)
-    
-    categories, categories_articles = categories_articles_count()#getting categories with theirs total articless
-    #getting articles => comments dict without query
-    articles_list, comments_list = articles_comment_count(request, 4)
-    
+        articles = Article.objects.filter(title__icontains=query)
+        if not articles:
+            articles = Article.objects.filter(category__name__icontains=query)
+            if not articles:
+                title = 'Aucun résultat pour la recherche "{}"'.format(query)
+    page = get_page(request)
+
     context = {
         "block_title": title,
-        "articles": Article.objects.all(),
+        "articles": articles,
         "comments": Comment.objects.all(),
-        "articles_comments": articles_comments,
-        "all_articles": all_articles,
         "title": title,
-        "random_posts": get_random_articles(4, articles_list),
-        "articles_comments_limit": get_articles_limit(3),
-        "categories_articles_count": categories_articles,
-        "categories": categories,
-        "query": query
+        "random_posts": get_random_articles(4, Article.objects.all()),
+        "categories": Category.objects.all(),
+        "query": query,
+        "page": page
     }
     
     return render(request, 'blog/search.html', context)
