@@ -159,6 +159,7 @@ def read_article(request, article_id):
             name = request.POST.get('name')
             message = request.POST.get('message')
             utilisateur = Utilisateur.objects.filter(email=email)
+            response = request.POST.get('response')
         
             if not utilisateur:
                 utilisateur = Utilisateur.objects.create(
@@ -189,7 +190,7 @@ def read_article(request, article_id):
                         comment=comment
                         )
 
-            return redirect('/blog/' + article_id + '/#formulaire')
+            return redirect('/blog/{}/?response={}#comments'.format(article_id, response))
             
         else:
             context['errors'] = form.errors.items()

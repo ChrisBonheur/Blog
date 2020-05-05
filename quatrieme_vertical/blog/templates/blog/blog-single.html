@@ -126,6 +126,7 @@
             <label for="{{ form.message.id_for_label }}">Message *</label>
             {{ form.message }}
           </div>
+          <input type="text" name="response" value="{{ response }}" style="display: none;">
           <div class="form-group">
             <input type="submit" value="Poster Commentaire" class="btn btn-primary" name="submit">
           </div>
