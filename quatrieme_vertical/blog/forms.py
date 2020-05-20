@@ -15,5 +15,6 @@ class CommentForm(forms.Form):
 	message = forms.CharField(
 		label='Commentaire',
 		widget=forms.TextInput(attrs={'class': 'form-control'}),
-		required=True
+		required=True,
+		max_length=1000
 	) 

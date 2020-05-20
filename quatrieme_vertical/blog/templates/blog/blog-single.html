@@ -7,7 +7,7 @@
     <div class="post-meta">
                 <span class="category">{{ article.category }} </span>
                 <span class="mr-2">{{ article.date }} </span> &bullet;
-                <span class="ml-2"><span class="fa fa-comments"></span> {{ comments|comments_count_filter:article.id }} </span>
+                <span class="ml-2"><span class="fa fa-comments"></span> {{ article.comment_count }} </span>
               </div>
     <div class="post-content-body">
 
@@ -40,7 +40,7 @@
 
 
     <div class="pt-5">
-      <h3 class="mb-5">{{ comments|comments_count_filter:article.id }} commentaire{% if comments_count > 1 %}s{% endif %}</h3>
+      <h3 class="mb-5">{{ article.comment_count }} commentaire{% if article.comments_count > 1 %}s{% endif %}</h3>
       
       {% if comments.has_next %}
         <p><a href="?page={{ comments.next_page_number }}#comments">Précédents commentaires</a></p>
@@ -49,23 +49,22 @@
       <ul class="comment-list" id="comments">
         {% if response != "hide" %}
             <li class="comment">
-              
                 <div class="vcard">
                   <img src="{% static 'blog/images/img_1.jpg' %}" alt="Image placeholder">
                 </div>
-                {% for comment in comments|get_comment:response %}
+
                 <div class="comment-body">
                   <h3>{{ comment.utilisateur.username }}</h3>
                   <div class="meta">{{ comment.date_create }}</div>
                   <p>{{ comment.content }} </p>
                   <p>
                     <a href="?response=hide#formulaire" class="reply">Répondre</a>
-                    <a href="?response=hide#comments"><span class="fa fa-comments"></span> {{ ResponseComment|responses_count_filter:comment.id }} </span></a>
+                    <a href="?response=hide#comments"><span class="fa fa-comments"></span> {{ comment.response_count }} </span></a>
                   </p>
                 </div>
 
                 <ul class="children">
-                 {% for response in ResponseComment|responses_filter:comment.id %}
+                 {% for response in comment.get_reponses %}
                   <li class="comment">
                     <div class="vcard">
                       <img src="{% static 'blog/images/img_1.jpg' %}" alt="Image placeholder">
@@ -79,11 +78,10 @@
                    </li>
                   {% endfor %}      
                 </ul>
-                {% endfor %}
             </li>       
         {% else %}
 
-          {% for comment in comments|comments_filter:article.id  %}
+          {% for comment in article.comments %}
             <li class="comment">             
                 <div class="vcard">
                   <img src="{% static 'blog/images/img_1.jpg' %}" alt="Image placeholder">
@@ -95,7 +93,7 @@
                   <p>{{ comment.content }} </p>
                   <p>
                     <a href="?response={{ comment.id }}#formulaire" class="reply">Répondre</a>
-                    <a href="?response={{ comment.id }}#comments"><span class="fa fa-comments"></span> {{ ResponseComment|responses_count_filter:comment.id }} </span></a>
+                    <a href="?response={{ comment.id }}#comments"><span class="fa fa-comments"></span> {{ comment.response_count }} </span></a>
                   </p>
                 </div>
             </li>

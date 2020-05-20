@@ -1,18 +1,25 @@
 {% load static blog_extras %}
 <div class="col-md-12 col-lg-8 main-content" id="postes">
   <div class="row">
-    {% for article in articles|paginator:page %}
+    {% for article in articles_pagined %}
     <div class="col-md-6">
       <a href="{% url 'blog:single' article_id=article.id %}" class="blog-entry element-animate" data-animate-effect="fadeIn">
-        <img src="{% static 'blog/images/' + %}{{ article.image }}" alt="Image placeholder">
+        
+        {# if images length of an article is egual to 1 #}
+        {% if images|images_by_article:article.id|length >= 1 %}
+          <img src="{{ images|images_by_article:article.id|indice:0 }}" alt="Image placeholder">
+        {% endif %}
+
         <div class="blog-content-body">
           <div class="post-meta">
             <span class="category">{{ article.category }}</span>
             <span class="mr-2">{{ article.date_create }} </span> &bullet;
-            <span class="ml-2"><span class="fa fa-comments"></span> {{ comments|comments_count_filter:article.id }} </span>
+            <span class="ml-2"><span class="fa fa-comments"></span> {{ article.comment_count}} </span>
           </div>
           <h2>{{ article.title }}</h2>
         </div>
+        <P>
+
       </a>
     </div>
     {% endfor %}
@@ -52,7 +59,8 @@
       {% for article, comment_count in random_posts.items %}
       <div class="post-entry-horzontal">
         <a href="{% url 'blog:single' article_id=article.id %} ">
-          <div class="image element-animate"  data-animate-effect="fadeIn" style="background-image: url({% static 'blog/images/' + %}{{ article.image }});"></div>
+          <div class="image element-animate"  data-animate-effect="fadeIn" style="        {% if images|images_by_article:article.id|length >= 1 %} background-image: url({{ images|images_by_article:article.id|indice:0 }});{% endif %}"></div>
+          
           <span class="text">
             <div class="post-meta">
               <span class="category">{{ article.category }}</span>

@@ -103,11 +103,13 @@
                   <!-- END sidebar-box -->
                   <div class="sidebar-box">
                   <div class="bio text-center">
-                      <img src="{% static 'blog/images/person_1.jpg' %}" alt="Image Placeholder" class="img-fluid">
+                      <img src="{% static 'blog/images/samael07.jpg' %}" alt="Image Placeholder" class="img-fluid">
                       <div class="bio-body">
-                      <h2>Meagan Smith</h2>
-                      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Exercitationem facilis sunt repellendus excepturi beatae porro debitis voluptate nulla quo veniam fuga sit molestias minus.</p>
-                      <p><a href="#" class="btn btn-primary btn-sm">Biographie Aun Weor</a></p>
+                      <h2>Samael Aun Weor</h2>
+                      <p>
+                        <strong>Víctor Manuel Gómez Rodríguez</strong> est né à Bogota en Colombie. Après avoir commencé ses études chez les Jésuites, insatisfait, il les quitte à l'âge de 12 ans pour se vouer à l'étude du spiritisme d'Allan Kardec. À 16 ans, il rejoint la Société théosophique pour être finalement admis, à l’âge de 18 ans, à la Fraternitas Rosicruciana Antiqua d'Arnold Krumm-Heller, où il prétend y avoir donné des conférences5,6,7. C’est là aussi qu’il aurait étudié la totalité de la bibliothèque rosicrucienne et qu’il aurait appris le secret du « Grand Arcane » ou de la sexualité sacrée, la clé qui, selon lui, sous-tend l’enseignement de toutes les grandes religions du monde
+                      </p>
+                      <p><a href="https://fr.wikipedia.org/wiki/Sama%C3%ABl_Aun_Weor" class="btn btn-primary btn-sm">Biographie Aun Weor</a></p>
                       <p class="social">
                           <a href="#" class="p-2"><span class="fa fa-facebook"></span></a>
                           <a href="#" class="p-2"><span class="fa fa-youtube-play"></span></a>
@@ -123,12 +125,15 @@
                         {% for article in articles|limit_table:5 %}
                         <li>
                             <a href="{% url 'blog:single' article_id=article.id %}">
-                            <img src="{% static 'blog/images/' + %}{{article.image}}" alt="Image placeholder" class="mr-4">
+                            {% if images|images_by_article:article.id|length >= 1 %}
+                            <img src="{{ images|images_by_article:article.id|indice:0 }}" alt="Image placeholder" class="mr-4">
+                            {% endif %}
+
                             <div class="text">
                                 <h4>{{ article.title }}</h4>
                                 <div class="post-meta">
                                 <span class="mr-2">{{ article.date_create }} </span> &bullet;
-                                <span class="ml-2"><span class="fa fa-comments"></span> {{ comments|comments_count_filter:article.id }}</span>
+                                <span class="ml-2"><span class="fa fa-comments"></span> {{ article.comment_count }}</span>
                                 </div>
                             </div>
                             </a>
@@ -143,7 +148,7 @@
                   <h3 class="heading">Categories</h3>
                   <ul class="categories">
                       {% for category in categories %}
-                      <li><a href="{% url 'blog:search' %}?query={{ category.name }}">{{ category.name }} <span> {{ articles|article_count_by_category_filter:category.id }} </span></a></li>
+                      <li><a href="{% url 'blog:search' %}?query={{ category.name }}">{{ category.name }} <span> {{ category.count_art }} </span></a></li>
                       {% endfor %}
                   </ul>
                   </div>
@@ -227,12 +232,15 @@
                       {% for article in articles|limit_table:4 %}
                       <li>
                         <a href="{% url 'blog:single' article_id=article.id %} ">
-                          <img src="{% static 'blog/images/' + %}{{ article.image }}" alt="Image placeholder" class="mr-4">
+                          {% if images|images_by_article:article.id|length >= 1 %}
+                          <img src="{{ images|images_by_article:article.id|indice:0 }}" alt="Image placeholder" class="mr-4">
+                          {% endif %}
+                          
                           <div class="text">
                             <h4>{{ article.title }}</h4>
                             <div class="post-meta">
                               <span class="mr-2">{{ article.date }} </span> &bullet;
-                              <span class="ml-2"><span class="fa fa-comments"></span> {{ comments|comments_count_filter:article.id }} </span>
+                              <span class="ml-2"><span class="fa fa-comments"></span> {{ article.comment_count}} </span>
                             </div>
                           </div>
                         </a>
